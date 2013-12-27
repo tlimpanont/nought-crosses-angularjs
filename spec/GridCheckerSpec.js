@@ -116,6 +116,19 @@ describe("GridChecker", function() {
 
   });
 
+  it("random free cell should work", function() {
+     
+    _.map(_.flatten(gridManager.grid), function(gridCell) {
+        if(gridCell.coordinates_id !== "22")
+            return gridCell.value = "X";
+    });
+
+    expect((GridChecker.getRandomFreeCell() instanceof GridCell)).toBe(true);
+    expect((GridChecker.getRandomFreeCell()).coordinates_id).toEqual("22");
+    
+
+  });
+
   
 });
 

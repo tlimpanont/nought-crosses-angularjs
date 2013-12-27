@@ -10,6 +10,13 @@
 		}
 	}
 
+	GridChecker.getRandomFreeCell = function() {
+		var gridCells = _.filter(_.flatten(GridChecker.gridManager.grid), function(gridCell) {
+			return gridCell.value == null;
+		});
+		return _.sample(gridCells);
+	}
+
 	
 	GridChecker.checkCompletedRow = function() {
 		_.each(GridChecker.gridManager.getAllRows(), function(row, rowIndex) {
@@ -99,4 +106,11 @@
 		}
 		return false;
 	}
+
+	GridChecker.checkForDraw = function() {
+		return (_.countBy(_.flatten(GridChecker.gridManager.grid), function(gridCell) {
+			return gridCell.value != null;
+		}).true >= GridChecker.gridManager.cells) ? true : false;
+	}
+
 })(window, _);
