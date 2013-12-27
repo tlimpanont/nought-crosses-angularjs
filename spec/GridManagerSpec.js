@@ -1,4 +1,4 @@
-describe("GridManager", function() {
+describe("Class for creating simple 2-dimensional grid with columns en rows. It provides query methods for searching a specific cell, row or column.", function() {
   
   var gridManager;
 

@@ -59,8 +59,8 @@
 	}
 
 	/**
-	 * [getAllRows description]
-	 * @return {Array} [description]
+	 * Get all rows in the grid
+	 * @return {Array} 
 	 */
 	GridManager.prototype.getAllRows = function() {
 		var rows = new Array();
@@ -72,8 +72,8 @@
 	}
 
 	/**
-	 * [getAllColumns description]
-	 * @return {Array} [description]
+	 * Get all columns in the grid
+	 * @return {Array} 
 	 */
 	GridManager.prototype.getAllColumns = function() {
 		var columns = new Array();

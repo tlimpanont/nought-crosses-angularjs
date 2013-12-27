@@ -1,13 +1,18 @@
 var app = angular.module("app", ['ngAnimate']);
-app.controller("mainCtrl", function($scope, gridChecker) {
+app.controller("mainCtrl", function($scope, GridChecker) {
 	$scope.player1Symbol = "X";
-	$scope.player1Symbol = "X";
+	$scope.player2Symbol = "O";
+
 	$scope.cellClickHandler = function(gridCell, gridManager) {
 		gridCell.value = "X";
-		gridChecker.setGridManager(gridManager);
 		
-		if(gridChecker.checkAllRows())
-			console.log(gridChecker.completed_cells);
+		GridChecker.initialize({
+			gridManager: gridManager,
+			value: $scope.player1Symbol
+		});
+		
+		if(GridChecker.checkAllRows())
+			console.log(GridChecker.completed_cells);
 	}
 
 });
@@ -45,48 +50,6 @@ app.factory("GridManager", function() {
 	return GridManager;
 });
 
-app.factory("gridChecker", function() {
-	var gridChecker = {};
-	gridChecker.completed_cells = null;
-	gridChecker.setGridManager = function(gridManager) {
-		gridChecker.gridManager = gridManager;
-	}
-
-	gridChecker.checkAllRows = function() {
-		
-		_.each(gridChecker.gridManager.getAllRows(), function(row, rowIndex) {
-			var counter = 0;
-			_.each(gridChecker.gridManager.getRow(rowIndex), function(gridCell) {
-				if(gridCell.value == "X")
-					counter++;
-			});
-
-			if(counter >= gridChecker.gridManager.rows)
-				alert("at " + rowIndex);
-		});
-
-		return false;
-	}
-
-	gridChecker.checkAllColumns = function() {
-		_.each(gridChecker.gridManager.getAllColumns(), function(column, columnIndex) {
-			var counter = 0;
-			_.each(column, function(gridCell) {
-				if(gridCell.value == "X")
-					counter++;
-			});
-			if(counter >= gridChecker.gridManager.columns)
-				counter = 0; gridChecker.completed_cells = gridChecker.gridManager.getColumn(columnIndex); return true;
-		});
-		return false;
-	}
-
-	gridChecker.checkLeftToRight = function() {
-
-	}
-
-	gridChecker.checkRightToLeft = function() {
-
-	}
-	return gridChecker;
+app.factory("GridChecker", function() {
+	return GridChecker;
 });

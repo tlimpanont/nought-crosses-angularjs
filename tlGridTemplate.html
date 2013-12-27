@@ -1,7 +1,7 @@
 <div class="grid_container">
 	<div ng-repeat="column in gridManager.grid" ng-init="x=$index;width=cellWidth">
 		<div data-coordinates_id="{{gridCell.coordinates_id}}" ng-click="cellClickHandler(gridCell, gridManager)" ng-repeat="gridCell in column" ng-init="y=$index;height=cellHeight" class="grid_cell" style="left: {{x * width}}px; top: {{y * height}}px; width: {{width}}px; height: {{height}}px">
-			 {{gridCell.value}}
+			 {{gridCell.coordinates_id}}
 		</div>
 	</div>
 </div>
