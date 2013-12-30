@@ -8,6 +8,10 @@
 		GridChecker.getCompleted = function() {
 			return null;
 		}
+
+		GridChecker.getBeforeCompleted = function() {
+			return null;
+		}
 	}
 
 	GridChecker.getRandomFreeCell = function() {
@@ -17,93 +21,44 @@
 		return _.sample(gridCells);
 	}
 
-	
-	GridChecker.checkCompletedRow = function() {
-		_.each(GridChecker.gridManager.getAllRows(), function(row, rowIndex) {
-			var total_value = GridChecker.gridManager.countTotalValue(
-									GridChecker.gridManager.getRow(rowIndex)
-								).toString();
-			var pattern = GridChecker.value+"{"+GridChecker.gridManager.rows+"}";
-    		var patt = new RegExp(pattern);
+	GridChecker.checkCompleted = function(getSeries) {
+		var getSeries = getSeries;
+		var getCells = "";
 
-			if(total_value.match(patt))
+		switch(getSeries) {
+			case "getAllRows" :
+				getCells = "getRow";
+			break;
+			case "getAllColumns" :
+				getCells = "getColumn";
+			break;
+			default: 
+				getCells = getSeries;
+		}
+
+		
+		var pattern_length = GridChecker.gridManager[getSeries]().length;
+
+		_.each(GridChecker.gridManager[getSeries](), function(instance, index) {
+			
+			var total_value = GridChecker.gridManager.countTotalValue(
+									GridChecker.gridManager[getCells](index)
+								).toString();
+
+			var completed_pattern = GridChecker.value+"{"+pattern_length+"}";
+    		completed_pattern = new RegExp(completed_pattern);
+    		   		
+    		if(total_value.match(completed_pattern))
 			{
 				GridChecker.getCompleted = function() {
 					return {
-						instance: "Row",
-						index: rowIndex,
-						cells : GridChecker.gridManager.getRow(rowIndex)
-					}
-				}
-				return true;	
-			}	
-		});
-		return false;
-	}
-
-	GridChecker.checkCompletedColumn = function() {
-		_.each(GridChecker.gridManager.getAllColumns(), function(row, columnIndex) {
-			var total_value = GridChecker.gridManager.countTotalValue(
-									GridChecker.gridManager.getColumn(columnIndex)
-								).toString();
-			var pattern = GridChecker.value+"{"+GridChecker.gridManager.columns+"}";
-    		var patt = new RegExp(pattern);
-
-			if(total_value.match(patt))
-			{
-				GridChecker.getCompleted = function() {
-					return {
-						instance: "Column",
-						index: columnIndex,
-						cells : GridChecker.gridManager.getColumn(columnIndex)
+						cells : GridChecker.gridManager[getCells](index)
 					}
 				}
 				return true;	
 			}
+
 		});
-		return false;
-	}
-
-	GridChecker.checkCompletedLeftToRight = function() {
-		var left_to_right = GridChecker.gridManager.getLeftToRight();
-		var total_value = GridChecker.gridManager.countTotalValue(left_to_right).toString();
-
-		var pattern = GridChecker.value+"{"+left_to_right.length+"}";
-		var patt = new RegExp(pattern);
-
-		if(total_value.match(patt))
-		{
-			GridChecker.getCompleted = function() {
-				return {
-					instance: "leftToRight",
-					index: null,
-					cells : left_to_right
-				}
-			}
-			return true;	
-		}
-
-		return false;
-	}
-
-	GridChecker.checkCompletedRightToLeft = function() {
-		var right_to_left = GridChecker.gridManager.getRightToLeft();
-		var total_value = GridChecker.gridManager.countTotalValue(right_to_left).toString();
-
-		var pattern = GridChecker.value+"{"+right_to_left.length+"}";
-		var patt = new RegExp(pattern);
-
-		if(total_value.match(patt))
-		{
-			GridChecker.getCompleted = function() {
-				return {
-					instance: "leftToRight",
-					index: null,
-					cells : right_to_left
-				}
-			}
-			return true;	
-		}
 		return false;
 	}
 

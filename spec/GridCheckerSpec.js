@@ -30,25 +30,13 @@ describe("GridChecker", function() {
      gridManager.getCellByCoordinatesId("12").value = "X";
      gridManager.getCellByCoordinatesId("22").value = "X";
      
-    GridChecker.checkCompletedRow();
+    GridChecker.checkCompleted("getAllRows");
     expect(GridChecker.getCompleted()).not.toBe(null);
 
   });
 
-
-  it("when the last row is all marked with X it should return a completed object with rowIndex = 2", function() {
-  
-    gridManager.getCellByCoordinatesId("02").value = "X";
-    gridManager.getCellByCoordinatesId("12").value = "X";
-    gridManager.getCellByCoordinatesId("22").value = "X";
-
-    GridChecker.checkCompletedRow();
-    expect( GridChecker.getCompleted().index ).toEqual(2);
-
-  });
-
-  it("when we begin with clean grid, none of the row should be marked as completed", function() {
-    GridChecker.checkCompletedRow();
+ it("when we begin with clean grid, none of the row should be marked as completed", function() {
+    GridChecker.checkCompleted("getAllRows");
     expect(GridChecker.getCompleted()).toBe(null);
   });
 
@@ -58,7 +46,7 @@ describe("GridChecker", function() {
       gridManager.getCellByCoordinatesId("12").value = "X";
       gridManager.getCellByCoordinatesId("22").value = "X";
 
-      GridChecker.checkCompletedColumn();
+      GridChecker.checkCompleted("getAllColumns");
       expect(GridChecker.getCompleted()).toBe(null);
   });
 
@@ -68,7 +56,7 @@ describe("GridChecker", function() {
       gridManager.getCellByCoordinatesId("01").value = "X";
       gridManager.getCellByCoordinatesId("02").value = "X";
 
-      GridChecker.checkCompletedColumn();
+      GridChecker.checkCompleted("getAllColumns");
       expect(GridChecker.getCompleted()).not.toBe(null);
   });
 
@@ -78,7 +66,7 @@ describe("GridChecker", function() {
         gridCell.value = "X";
      });
 
-      GridChecker.checkCompletedLeftToRight();
+      GridChecker.checkCompleted("getLeftToRight");
       expect(GridChecker.getCompleted()).not.toBe(null);
 
   });
@@ -89,7 +77,7 @@ describe("GridChecker", function() {
         gridCell.value = "X";
      });
 
-      GridChecker.checkCompletedRightToLeft();
+      GridChecker.checkCompleted("getRightToLeft");
       expect(GridChecker.getCompleted()).not.toBe(null);
 
   });
@@ -100,16 +88,13 @@ describe("GridChecker", function() {
     gridManager.getCellByCoordinatesId("12").value = "X";
     gridManager.getCellByCoordinatesId("22").value = "X";
 
-
-    GridChecker.checkCompletedRow();
-    GridChecker.checkCompletedColumn();
-    GridChecker.checkCompletedLeftToRight();
-    GridChecker.checkCompletedRightToLeft();
-
+    GridChecker.checkCompleted("getAllRows");
+    GridChecker.checkCompleted("getAllColumns");
+    GridChecker.checkCompleted("getRightToLeft");
+    GridChecker.checkCompleted("getLeftToRight");
+   
     expect(GridChecker.getCompleted()).not.toBe(null);
-    expect(GridChecker.getCompleted().instance).toEqual("Row");
-    expect(GridChecker.getCompleted().index).toEqual(2);
-
+   
     expect(GridChecker.getCompleted().cells[0].coordinates_id).toEqual("02");
     expect(GridChecker.getCompleted().cells[1].coordinates_id).toEqual("12");
     expect(GridChecker.getCompleted().cells[2].coordinates_id).toEqual("22");
@@ -126,6 +111,23 @@ describe("GridChecker", function() {
     expect((GridChecker.getRandomFreeCell() instanceof GridCell)).toBe(true);
     expect((GridChecker.getRandomFreeCell()).coordinates_id).toEqual("22");
     
+
+  });
+
+  xit("search for a potentonial winner field.", function() {
+     
+    gridManager.getCellByCoordinatesId("02").value = "X";
+    gridManager.getCellByCoordinatesId("12").value = "X";
+
+    gridManager.getCellByCoordinatesId("00").value = "X";
+    gridManager.getCellByCoordinatesId("10").value = "X";
+   
+    GridChecker.checkCompleted("getAllRows");
+    GridChecker.checkCompleted("getAllColumns");
+    GridChecker.checkCompleted("getRightToLeft");
+    GridChecker.checkCompleted("getLeftToRight");
+
+    expect(GridChecker.getCompleted()).toBe(null);
 
   });
 

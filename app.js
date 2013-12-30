@@ -1,68 +1,55 @@
 var app = angular.module("app", ['ngAnimate']);
-app.controller("mainCtrl", function($scope, GridChecker, $animate, $timeout, Player) {
-	$scope.player = new Player({
-		symbol: 1,
-		isPlaying: true
-	});
-	
-	$scope.computer = new Player({
-		symbol: 2,
-		isPlaying: false
-	});
+app.controller("mainCtrl", function($scope, GridChecker, $animate, $timeout, Player, PlayersManager) {
+	$scope.player = new Player({ symbol: "X", isPlaying: true});
+	$scope.player.className = "player1";
+	$scope.computer = new Player({ symbol: "O", isPlaying: false});
+	$scope.computer.className = "computer";
+
+	PlayersManager.addPlayer($scope.player);
+	PlayersManager.addPlayer($scope.computer);
+
+	$scope.PlayersManager = PlayersManager;
+	$scope.GridChecker = GridChecker;
+	$scope.draw = false;
 
 	$scope.cellClickHandler = function(gridCell, gridManager, event) {
+		if(gridCell.value != undefined)
+			if(event != null &&  PlayersManager.getCurrentPlayer() === $scope.computer || gridCell.value)	
+				return false;
 	
-		if(event != null && getCurrentPlayer() === $scope.computer)
-			return false;
-
-		gridCell.value = getCurrentPlayer().symbol;
+		gridCell.value = PlayersManager.getCurrentPlayer().symbol;
+		gridCell.className = PlayersManager.getCurrentPlayer().className;
 		
 		GridChecker.initialize({
 	        gridManager: gridManager,
-	        value: getCurrentPlayer().symbol
+	        value: PlayersManager.getCurrentPlayer().symbol
     	});
 
 
-	    GridChecker.checkCompletedLeftToRight();
-	    GridChecker.checkCompletedRightToLeft();
-	    GridChecker.checkCompletedRow();
-	    GridChecker.checkCompletedColumn();
-	    
-	    if(GridChecker.checkForDraw())
-	    	throw new Error("A game has ended as a draw!");
-
-
+	    GridChecker.checkCompleted("getAllRows");
+	    GridChecker.checkCompleted("getAllColumns");
+	    GridChecker.checkCompleted("getRightToLeft");
+	    GridChecker.checkCompleted("getLeftToRight");
+		   
 	    var completed = GridChecker.getCompleted();
-
+	   	
 	    if( completed == null) 
 	    {
-	    	
-	    	$scope.player.isPlaying = !$scope.player.isPlaying;
-	    	$scope.computer.isPlaying = !$scope.computer.isPlaying;
+	    	PlayersManager.switchPlayer();
 
-	    	if(getCurrentPlayer() === $scope.computer)
+	    	if(PlayersManager.getCurrentPlayer() === $scope.computer)
 	    		$timeout(function() {
-	    			$scope.cellClickHandler(GridChecker.getRandomFreeCell(), gridManager, null);
-	    		}, 3000)
-
+	    			var next_grid_cell = GridChecker.getRandomFreeCell();
+	    			$scope.cellClickHandler(next_grid_cell, gridManager, null);
+	    		}, 800)
 	    }
 	    else
 	    {
-	    	// current player wins!
 	    	_.map(completed.cells, function(gridCell) {
 	    		gridCell.completed = true;
 	    	});
-
-	    	alert("Symbol " + getCurrentPlayer().symbol + " has won the game");
-	    	//window.location.reload();
-	    	//gridManager.createGrid();
 	    }
 	}
-
-	function getCurrentPlayer() {
-		return ($scope.player.isPlaying) ? $scope.player : $scope.computer;
-	}
-
 });
 
 
@@ -74,7 +61,7 @@ app.directive("tlGrid", function(GridManager) {
 			cellWidth: "=",
 			cellHeight: "=",
 			grid: "&",
-			cellClickHandler: "=",
+			cellClickHandler: "="
 		},
 		replace: true,
 		templateUrl: 'tlGridTemplate.html',
@@ -100,6 +87,24 @@ app.factory("GridManager", function() {
 
 app.factory("GridChecker", function() {
 	return GridChecker;
+});
+
+app.factory("PlayersManager", function() {
+	PlayersManager = {};
+	PlayersManager.players = new Array();
+	PlayersManager.addPlayer = function(player) {
+		if(PlayersManager.players.length >= 2)
+			throw Error("You can't add no more than two players!");
+		PlayersManager.players.push(player);
+	}
+	PlayersManager.getCurrentPlayer = function() {
+		return (PlayersManager.players[0].isPlaying) ? PlayersManager.players[0] : PlayersManager.players[1]; 
+	}
+	PlayersManager.switchPlayer = function() {
+		PlayersManager.players[0].isPlaying = !PlayersManager.players[0].isPlaying;
+    	PlayersManager.players[1].isPlaying = !PlayersManager.players[1].isPlaying;
+	}
+	return PlayersManager;
 });
 
 app.factory("Player", function() {
